@@ -1,0 +1,55 @@
+#Maria Jose Saenz Carmona. 2077609. IB. ARTIFICIAL INTELLIGENCE
+import requests
+import re
+from collections import Counter
+
+def count_words(text):
+    words = text.split()
+    return len(words)
+
+def count_sentences(text):
+    sentences = re.split(r'[.!?]', text)
+    return len(sentences)
+
+def count_paragraphs(text):
+    paragraphs = text.split('\n\n')
+    return len(paragraphs)
+
+def average_word_length(text):
+    words = text.split()
+    total_word_length = sum(len(word) for word in words)
+    return total_word_length / len(words) if len(words) > 0 else 0
+
+def most_common_words(text, n=10):
+    words = re.findall(r'\b\w+\b', text.lower())
+    word_counts = Counter(words)
+    return word_counts.most_common(n)
+
+def main(url):
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            text = response.text
+
+            word_count = count_words(text)
+            sentence_count = count_sentences(text)
+            paragraph_count = count_paragraphs(text)
+            avg_word_length = average_word_length(text)
+            common_words = most_common_words(text)
+
+            print(f"Number of words: {word_count}")
+            print(f"Number of sentences: {sentence_count}")
+            print(f"Number of paragraphs: {paragraph_count}")
+            print(f"Average word length: {avg_word_length:.2f}")
+            print("Most common words:")
+            for word, frequency in common_words:
+                print(f"{word}: {frequency}")
+        else:
+            print(f"Failed to fetch content from {url}. Status code: {response.status_code}")
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+if __name__ == "__main__":
+    github_url = input("Enter the GitHub raw content URL of the file: ")
+    main(github_url)
